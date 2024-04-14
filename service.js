@@ -34,31 +34,40 @@ export default class Service {
     )
   }
 
-
   async handBlinked(video) {
-    const predictions = await this.#estimateFaces(video)
-    if (!predictions.length) return false
+    const predictions = await this.#estimateFaces(video);
+    if (!predictions.length) return false //{ blinked: false, eye: 'none' };
 
     for (const prediction of predictions) {
+        // Right eye parameters
+        const lowerRight = prediction.annotations.rightEyeUpper0;
+        const upperRight = prediction.annotations.rightEyeLower0;
+        const rightEAR = this.#getEAR(upperRight, lowerRight);
+        // Left eye parameters
+        const lowerLeft = prediction.annotations.leftEyeUpper0;
+        const upperLeft = prediction.annotations.leftEyeLower0;
+        const leftEAR = this.#getEAR(upperLeft, lowerLeft);
 
-      // Right eye parameters
-      const lowerRight = prediction.annotations.rightEyeUpper0
-      const upperRight = prediction.annotations.rightEyeLower0
-      const rightEAR = this.#getEAR(upperRight, lowerRight)
-      // Left eye parameters
-      const lowerLeft = prediction.annotations.leftEyeUpper0
-      const upperLeft = prediction.annotations.leftEyeLower0
-      const leftEAR = this.#getEAR(upperLeft, lowerLeft)
+        // Threshold check for each eye
+        const rightBlinked = rightEAR <= EAR_THRESHOLD;
+        const leftBlinked = leftEAR <= EAR_THRESHOLD;
 
-      // True if the eye is closed
-      const blinked = leftEAR <= EAR_THRESHOLD && rightEAR <= EAR_THRESHOLD
-      if (!blinked) continue
-      if(!shouldRun()) continue
-
-      return blinked
+        if (!shouldRun()) {
+          continue
+        } else if(rightBlinked && !leftBlinked){
+          console.log('right')
+          return true //{ blinked: true, eye: 'right' };
+        } else if(leftBlinked && !rightBlinked){
+          console.log('left')
+          return true //{ blinked: true, eye: 'left' };
+        } else {
+          continue
+        }
     }
+
     return false
-  }
+}
+
 
   #estimateFaces(video) {
     return this.#model.estimateFaces({
