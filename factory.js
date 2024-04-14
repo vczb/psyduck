@@ -1,5 +1,5 @@
-import Camera from "../../../lib/shared/camera.js"
-import { supportsWorkerType } from "../../../lib/shared/util.js"
+import Camera from "./camera.js"
+import { supportsWorkerType } from "./util.js"
 import Controller from "./controller.js"
 import Service from "./service.js"
 import View from "./view.js"
@@ -7,7 +7,7 @@ import View from "./view.js"
 async function getWorker() {
   if (supportsWorkerType()) {
     console.log('initializing esm workers')
-    const worker = new Worker('./src/worker.js', { type: 'module' })
+    const worker = new Worker('./worker.js', { type: 'module' })
     return worker
   }
   console.warn(`Your browser doesn't support esm modules on webworkers!`)
