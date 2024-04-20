@@ -28,7 +28,6 @@ async function getWorker() {
       if(!blinked) return;
       workerMock.onmessage({ data: { blinked }})
      },
-    //  vai ser sobreescrito pela controller
     onmessage(msg) { }
   }
   console.log('loading tf model...')

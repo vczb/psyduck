@@ -7,13 +7,11 @@ export default class Controller {
     this.#view = view
     this.#camera = camera
     this.#worker = this.#configureWorker(worker)
-
-    this.#view.configureOnBtnClick(this.onBtnStart.bind(this))
   }
 
   static async initialize(deps) {
     const controller = new Controller(deps)
-    controller.log('not yet detecting eye blink! click in the button to start')
+    console.log('not yet detecting eye blink! wait the full page load')
     return controller.init()
   }
 
@@ -22,13 +20,12 @@ export default class Controller {
     worker.onmessage = ({ data }) => {
       if ('READY' === data) {
         console.log('worker is ready!')
-        this.#view.enableButton()
+        this.initializeDetection()
         ready = true
         return
       }
       const blinked = data.blinked
       this.#blinkCounter += blinked
-      this.#view.togglePlayVideo()
       console.log('blinked', blinked)
     }
 
@@ -47,16 +44,11 @@ export default class Controller {
     const video = this.#camera.video
     const img = this.#view.getVideoFrame(video)
     this.#worker.send(img)
-    this.log(`detecting eye blink...`)
     setTimeout(() => this.loop(), 100)
   }
-  log(text) {
-    const times = `      - blinked times: ${this.#blinkCounter}`
-    this.#view.log(`status: ${text}`.concat(this.#blinkCounter ? times : ""))
-  }
 
-  onBtnStart() {
-    this.log('initializing detection...')
+  initializeDetection() {
+    console.log('initializing detection...')
     this.#blinkCounter = 0
     this.loop()
   }

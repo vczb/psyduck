@@ -1,6 +1,4 @@
 export default class View {
-  #btnInit = document.querySelector('#init')
-  #statusElement = document.querySelector('#status')
   #videoFrameCanvas = document.createElement('canvas')
   #canvasContext = this.#videoFrameCanvas.getContext('2d', { willReadFrequently: true })
   #videoElement = document.querySelector('#video')
@@ -20,15 +18,5 @@ export default class View {
       return
     }
     this.#videoElement.pause()
-  }
-  enableButton() {
-    this.#btnInit.disabled = false
-  }
-
-  configureOnBtnClick(fn) {
-    this.#btnInit.addEventListener('click', fn)
-  }
-  log(text) {
-    this.#statusElement.innerHTML = text
   }
 }
