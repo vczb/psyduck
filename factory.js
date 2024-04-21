@@ -24,9 +24,9 @@ async function getWorker() {
 
   const workerMock = {
     async postMessage(video) {
-      const blinked = await service.handBlinked(video)
-      if(!blinked) return;
-      workerMock.onmessage({ data: { blinked }})
+      const data = await service.handlePredict(video)
+      if(!data) return;
+      workerMock.onmessage({ data: { data }})
      },
     onmessage(msg) { }
   }
@@ -41,7 +41,6 @@ async function getWorker() {
 const worker = await getWorker()
 
 const camera = await Camera.init()
-const [rootPath] = window.location.href.split('/pages/')
 const factory = {
   async initialize() {
     return Controller.initialize({

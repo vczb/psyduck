@@ -34,10 +34,12 @@ export default class Service {
     )
   }
 
-  async handBlinked(video) {
-    const predictions = await this.#estimateFaces(video);
-    if (!predictions.length) return false //{ blinked: false, eye: 'none' };
+  async handlePredict(video) {
+    const RETURN_NONE = {move: false, blinked: false}
 
+    const predictions = await this.#estimateFaces(video);
+    if (!predictions.length) return RETURN_NONE;
+    
     for (const prediction of predictions) {
         // Right eye parameters
         const lowerRight = prediction.annotations.rightEyeUpper0;
@@ -52,20 +54,23 @@ export default class Service {
         const rightBlinked = rightEAR <= EAR_THRESHOLD;
         const leftBlinked = leftEAR <= EAR_THRESHOLD;
 
+    
+
         if (!shouldRun()) {
           continue
         } else if(rightBlinked && !leftBlinked){
-          console.log('right')
-          return true //{ blinked: true, eye: 'right' };
+          return { blinked: true, eye: 'right' };
         } else if(leftBlinked && !rightBlinked){
-          console.log('left')
-          return true //{ blinked: true, eye: 'left' };
+          console.log(prediction)
+          return { blinked: true, eye: 'left' };
         } else {
-          continue
+          const [x, y] = prediction.annotations.noseTip[0];
+       
+          return { move: true, x: parseInt(x), y: parseInt(y) };
         }
     }
 
-    return false
+    return RETURN_NONE
 }
 
 

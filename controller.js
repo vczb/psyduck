@@ -15,6 +15,17 @@ export default class Controller {
     return controller.init()
   }
 
+  #handleBlinked({blinked}){
+    console.log(blinked)
+    this.#blinkCounter += blinked
+    console.log('blinked', blinked)
+    console.log('blinked', this.#blinkCounter)
+  }
+
+  #handleMove({left, right, top, bottom, x, y}){
+    this.#view.drawTarget({left, right, top, bottom, x, y})
+  }
+
   #configureWorker(worker) {
     let ready = false
     worker.onmessage = ({ data }) => {
@@ -24,9 +35,12 @@ export default class Controller {
         ready = true
         return
       }
-      const blinked = data.blinked
-      this.#blinkCounter += blinked
-      console.log('blinked', blinked)
+      if(data.blinked){
+        this.#handleBlinked(data)
+      } else if (data.move) {
+        this.#handleMove(data);
+      }
+
     }
 
     return {
