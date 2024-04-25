@@ -15,11 +15,15 @@ export default class Controller {
     return controller.init()
   }
 
-  #handleBlinked({blinked}){
-    console.log(blinked)
-    this.#blinkCounter += blinked
-    console.log('blinked', blinked)
+  #handleBlinked({eye, x, y}){
+    this.#blinkCounter += 1
     console.log('blinked', this.#blinkCounter)
+
+    if(eye === 'left'){
+      this.#view.clickOnElement(x, y)
+    } else if(eye === 'right'){
+      this.#view.rightClick()
+    }
   }
 
   #handleMove({left, right, top, bottom, x, y}){
@@ -37,9 +41,8 @@ export default class Controller {
       }
       if(data.blinked){
         this.#handleBlinked(data)
-      } else if (data.move) {
-        this.#handleMove(data);
       }
+      this.#handleMove(data);
 
     }
 

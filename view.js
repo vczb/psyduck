@@ -63,4 +63,26 @@ export default class View {
     this.#targetCanvas.style.left = finalX + 'px';
     this.#targetCanvas.style.top = finalY + 'px';
   }
+
+  clickOnElement(x, y) {
+    this.#targetCanvas.style.background = 'red';
+
+    const element = document.elementFromPoint(x, y)
+    if(!element) return;
+    
+    const rect = element.getBoundingClientRect()
+    const event = new MouseEvent('click', {
+      view: window,
+      bubbles: true,
+      cancelable: true,
+      clientX: rect.left + x,
+      clientY: rect.top + y
+    })
+
+    element.dispatchEvent(event)
+  }
+
+  rightClick(){
+    this.#targetCanvas.style.background = 'transparent';
+  }
 }

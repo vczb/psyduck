@@ -35,10 +35,8 @@ export default class Service {
   }
 
   async handlePredict(video) {
-    const RETURN_NONE = {move: false, blinked: false}
-
     const predictions = await this.#estimateFaces(video);
-    if (!predictions.length) return RETURN_NONE;
+    if (!predictions.length) return false;
     
     for (const prediction of predictions) {
         // Right eye parameters
@@ -54,23 +52,23 @@ export default class Service {
         const rightBlinked = rightEAR <= EAR_THRESHOLD;
         const leftBlinked = leftEAR <= EAR_THRESHOLD;
 
-    
+        const [x, y] = prediction.annotations.noseTip[0];
+
+        const intX = parseInt(x)
+        const intY = parseInt(y)
 
         if (!shouldRun()) {
           continue
         } else if(rightBlinked && !leftBlinked){
-          return { blinked: true, eye: 'right' };
+          return { blinked: true, eye: 'right', x: intX, y: intY };
         } else if(leftBlinked && !rightBlinked){
-          console.log(prediction)
-          return { blinked: true, eye: 'left' };
+          return { blinked: true, eye: 'left', x: intX, y: intY };
         } else {
-          const [x, y] = prediction.annotations.noseTip[0];
-       
-          return { move: true, x: parseInt(x), y: parseInt(y) };
+          return {eye: 'none', x: intX, y: intY };
         }
     }
 
-    return RETURN_NONE
+    return false
 }
 
 
