@@ -10,21 +10,6 @@ export default class View {
     this.previousY = null;
   }
 
-  getSmoothCoordinates(x, y) {
-    if (this.previousX === null || this.previousY === null) {
-      this.previousX = x;
-      this.previousY = y;
-    }
-
-    const smoothedX = this.alpha * x + (1 - this.alpha) * this.previousX;
-    const smoothedY = this.alpha * y + (1 - this.alpha) * this.previousY;
-
-    this.previousX = smoothedX;
-    this.previousY = smoothedY;
-
-    return { x: smoothedX, y: smoothedY };
-  }
-
   getVideoFrame(video) {
     const canvas = this.#videoFrameCanvas;
     const [width, height] = [video.videoWidth, video.videoHeight];
@@ -43,25 +28,9 @@ export default class View {
     this.#videoElement.pause();
   }
 
-  scaleAndAdjustCoordinates(x, y, sensitivity = 2) {
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-
-    let deltaX = (x - centerX) * sensitivity;
-    let deltaY = (y - centerY) * sensitivity;
-
-    let newX = centerX + deltaX;
-    let newY = centerY + deltaY;
-
-    return { x: newX, y: newY };
-  }
-
   async drawTarget({ x, y }) {
-    let { x: smoothX, y: smoothY } = this.getSmoothCoordinates(x, y);
-    let { x: finalX, y: finalY } = this.scaleAndAdjustCoordinates(smoothX, smoothY, 3);
-
-    this.#targetCanvas.style.left = finalX + 'px';
-    this.#targetCanvas.style.top = finalY + 'px';
+    this.#targetCanvas.style.left = x + 'px';
+    this.#targetCanvas.style.top = y + 'px';
   }
 
   clickOnElement(x, y) {
